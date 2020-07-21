@@ -35,10 +35,6 @@ func (ctrl *controller) Save (c *gin.Context) error {
 		return err
 	}
 	
-	err = validate.Struct(invoice)
-	if err != nil {
-		return err
-	}
 	ctrl.service.Save(invoice)
 	return nil
 }
