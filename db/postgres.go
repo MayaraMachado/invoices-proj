@@ -3,7 +3,7 @@ package db
 import (
     "os"
     "log"
-    "fmt"
+    // "fmt"
     "database/sql"
     _ "github.com/lib/pq"
 )
@@ -28,17 +28,17 @@ const (
 )
 
 func NewDB() *sql.DB {
-    // var err error
+    var err error
     // var databaseInfo = "postgres://postgres:123@localhost/postgres?sslmode=disable"
 
-    config := dbConfig()
-    var err error
-    databaseInfo := fmt.Sprintf("host=%s port=%s user=%s "+
-        "password=%s dbname=%s sslmode=disable",
-        config[dbhost], config[dbport],
-        config[dbuser], config[dbpass], config[dbname])
+    // config := dbConfig()
+    // var err error
+    // databaseInfo := fmt.Sprintf("host=%s port=%s user=%s "+
+    //     "password=%s dbname=%s sslmode=disable",
+    //     config[dbhost], config[dbport],
+    //     config[dbuser], config[dbpass], config[dbname])
 
-    db, err = sql.Open(dbtype, databaseInfo)
+    db, err = sql.Open(dbtype, os.Getenv("DATABASE_URL"))
     if err != nil {
         log.Panic(err)
     }
