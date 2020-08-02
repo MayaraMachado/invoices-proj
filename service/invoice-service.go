@@ -9,7 +9,7 @@ type InvoiceService interface {
 	Save(invoice entity.Invoice) (entity.Invoice, error)
 	Update(invoice entity.Invoice) (entity.Invoice, error)
 	Delete(invoice entity.Invoice) (entity.Invoice, error)
-	FindAll() ([]entity.Invoice, error)
+	FindAll(offset int, limite int, mes int, ano int, documento string, order string) ([]entity.Invoice, error)
 }
 
 type invoiceService struct {
@@ -26,8 +26,8 @@ func (service *invoiceService) Save(invoice entity.Invoice) (entity.Invoice, err
 	return service.invoiceRepository.Save(invoice)
 }
 
-func (service *invoiceService) FindAll() ([]entity.Invoice, error) {
-	return service.invoiceRepository.FindAll()
+func (service *invoiceService) FindAll(offset int, limite int, mes int, ano int, documento string, order string) ([]entity.Invoice, error) {
+	return service.invoiceRepository.FindAll(offset, limite, mes, ano, documento, order)
 }
 
 func (service *invoiceService) Update(invoice entity.Invoice) (entity.Invoice, error){

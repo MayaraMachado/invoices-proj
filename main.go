@@ -59,7 +59,7 @@ func main(){
 	{
 
 		apiRoutes.GET("/invoices", func(c *gin.Context){
-			c.JSON(200, invoiceController.FindAll())
+			c.JSON(200, invoiceController.FindAll(c))
 		})
 
 		apiRoutes.POST("/invoices", func(c *gin.Context){
@@ -90,7 +90,7 @@ func main(){
 		})
 	}
 
-	port := os.Getenv("PORT")
-	// port:= "3000"
+	// port := os.Getenv("PORT")
+	port:= "3000"
 	server.Run(":" + port)
 }

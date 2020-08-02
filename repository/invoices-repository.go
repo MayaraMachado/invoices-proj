@@ -14,7 +14,7 @@ type InvoiceRepository interface {
 	Update(invoice entity.Invoice) (entity.Invoice, error)
 	Delete(invoice entity.Invoice) (entity.Invoice, error)
 	GetByID(invoiceId uint64) (entity.Invoice, error)
-	FindAll() ([]entity.Invoice, error)
+	FindAll(offset int, limite int, mes int, ano int, documento string, order string) ([]entity.Invoice, error)
 	CloseDbConnection()
 }
 
@@ -93,15 +93,47 @@ func (repository *invoiceRepository) Delete(invoice entity.Invoice) (entity.Invo
 	return deletedInvoice, nil
 }
 
-func (repository *invoiceRepository) FindAll() ([]entity.Invoice, error) {
+func (repository *invoiceRepository) FindAll(offset int, limite int, mes int, ano int, documento string, order string) ([]entity.Invoice, error) {
 		invoices := []entity.Invoice{}
-		query_string := fmt.Sprintf("SELECT * FROM invoices ORDER BY id;")
+		condition_str := ""
+		query_string := fmt.Sprintf("SELECT * FROM invoices")
+		
+		//  OFFSET %s LIMIT %s;", order, strconv.Itoa(offset), strconv.Itoa(limite))
+		
+		// Montando cláusula WHERE
+		if mes != 0 {
+			condition_str =  condition_str + " reference_month=" + strconv.Itoa(mes)
+		}
+
+		if ano != 0 {
+			if condition_str != ""{
+				condition_str =  condition_str + ","
+			}
+			condition_str =  condition_str + " reference_year=" + strconv.Itoa(ano)
+		}
+
+		if documento != "" {
+			if condition_str != ""{
+				condition_str =  condition_str + ","
+			}
+			condition_str =  condition_str + " document=" + documento
+		}
+
+		if condition_str != "" {
+			query_string = query_string + " WHERE " + condition_str
+		}
+
+		// Montando Cláusula ORDER BY
+		if order != "" {
+			query_string = query_string + " ORDER BY " + order + " ASC "
+		}
+
+		// Montando Query String
+		query_string = query_string + " OFFSET " +  strconv.Itoa(offset) + " LIMIT "+ strconv.Itoa(limite) + ";"
 		result, err := repository.db.Query(query_string)
 		if err != nil {
 			return invoices, err
 		}
-
-		defer result.Close()
 
 		for result.Next() {
 			invoice := entity.Invoice{}
