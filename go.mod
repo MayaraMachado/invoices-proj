@@ -1,7 +1,7 @@
 module github.com/mayaramachado/invoice-api
 
-go v1.13
-
+go 1.13
+// +heroku goVersion go1.13
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.6.3
