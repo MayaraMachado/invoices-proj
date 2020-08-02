@@ -107,16 +107,16 @@ func (repository *invoiceRepository) FindAll(offset int, limite int, mes int, an
 
 		if ano != 0 {
 			if condition_str != ""{
-				condition_str =  condition_str + ","
+				condition_str =  condition_str + " AND "
 			}
 			condition_str =  condition_str + " reference_year=" + strconv.Itoa(ano)
 		}
 
 		if documento != "" {
 			if condition_str != ""{
-				condition_str =  condition_str + ","
+				condition_str =  condition_str + " AND "
 			}
-			condition_str =  condition_str + " document=" + documento
+			condition_str =  condition_str + " document='" + documento +"'"
 		}
 
 		if condition_str != "" {
@@ -130,6 +130,7 @@ func (repository *invoiceRepository) FindAll(offset int, limite int, mes int, an
 
 		// Montando Query String
 		query_string = query_string + " OFFSET " +  strconv.Itoa(offset) + " LIMIT "+ strconv.Itoa(limite) + ";"
+		fmt.Println(query_string)
 		result, err := repository.db.Query(query_string)
 		if err != nil {
 			return invoices, err
