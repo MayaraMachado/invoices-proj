@@ -31,6 +31,7 @@ func setupLogOutput() {
 }
 
 func main(){
+
 	defer dbConnection.Close()
 	server := gin.New()
 
@@ -91,6 +92,9 @@ func main(){
 	}
 
 	port := os.Getenv("PORT")
-	// port:= "3000"
+	if port == "" {
+		port = "3000"
+	}
+
 	server.Run(":" + port)
 }

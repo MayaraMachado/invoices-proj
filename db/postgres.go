@@ -29,7 +29,11 @@ const (
 
 func NewDB() *sql.DB {
     var err error
-    // var databaseInfo = "postgres://postgres:123@localhost/postgres?sslmode=disable"
+    var dbInfo = os.Getenv("DATABASE_URL")
+
+    if dbInfo == "" {
+        dbInfo = "postgres://postgres:123@localhost/postgres?sslmode=disable"
+    }    
 
     // config := dbConfig()
     // var err error
@@ -38,7 +42,7 @@ func NewDB() *sql.DB {
     //     config[dbhost], config[dbport],
     //     config[dbuser], config[dbpass], config[dbname])
 
-    db, err = sql.Open(dbtype, os.Getenv("DATABASE_URL"))
+    db, err = sql.Open(dbtype, dbInfo)
     if err != nil {
         log.Panic(err)
     }
