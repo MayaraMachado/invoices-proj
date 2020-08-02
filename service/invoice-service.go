@@ -2,61 +2,50 @@ package service
 
 import (
 	"github.com/mayaramachado/invoice-api/entity"
+	"github.com/mayaramachado/invoice-api/repository"
 )
 
 type InvoiceService interface {
-	Save(entity.Invoice) entity.Invoice
-	FindAll() []entity.Invoice
+	Save(invoice entity.Invoice) (entity.Invoice, error)
+	Update(invoice entity.Invoice) (entity.Invoice, error)
+	Delete(invoice entity.Invoice) (entity.Invoice, error)
+	FindAll() ([]entity.Invoice, error)
 }
 
 type invoiceService struct {
-	invoices []entity.Invoice
+	invoiceRepository repository.InvoiceRepository
 }
 
-// type invoiceService struct {
-// 	db *sql.DB
-// }
-
-func New() InvoiceService {
-	return &invoiceService{}
+func NewInvoiceService(repo repository.InvoiceRepository) InvoiceService {
+	return &invoiceService{
+		invoiceRepository: repo,
+	}
 }
 
-// func New(db *sql.DB) invoiceService {
-// 	return invoiceService{
-// 		db: db,
-// 	}
-// }
-
-func (service *invoiceService) Save(invoice entity.Invoice) entity.Invoice {
-	service.invoices = append(service.invoices, invoice)
-	return invoice
+func (service *invoiceService) Save(invoice entity.Invoice) (entity.Invoice, error) {
+	return service.invoiceRepository.Save(invoice)
 }
 
-func (service *invoiceService) FindAll() []entity.Invoice {
-	return service.invoices
+func (service *invoiceService) FindAll() ([]entity.Invoice, error) {
+	return service.invoiceRepository.FindAll()
 }
 
-// func (service *invoiceService) FindAll() []entity.Invoice {
-// 	invoices := []entity.Invoice{}
-// 	stmt := fmt.Sprintf("SELECT * FROM invoices")
-// 	result, err := service.db.Query(stmt)
-// 	if err != nil {
-// 		return invoices
-// 	}
+func (service *invoiceService) Update(invoice entity.Invoice) (entity.Invoice, error){
+	_, err := service.invoiceRepository.GetByID(invoice.Id)
+	if err != nil{
+		panic(err)
+	}
 
-// 	defer result.Close()
+	return service.invoiceRepository.Update(invoice)
+}
 
-// 	for result.Next() {
-// 		invoice := entity.Invoice{}
-// 		err := result.Scan(&invoice.Id, &invoice.ReferenceMonth, &invoice.ReferenceYear, &invoice.Document, &invoice.Description, &invoice.Amount, &invoice.IsActive, &invoice.CreatedAt, &invoice.DeactivatedAt)
-// 		if err != nil {
-// 			return invoices
-// 		}
-// 		invoices = append(invoices, invoice)
-// 	}
-// 	return invoices
-// }
+func (service *invoiceService) Delete (invoice entity.Invoice) (entity.Invoice, error){
 
-// func (service *invoiceService) PartialUpdate(pk int32) []entity.Invoice {
-// 	return service.invoices
-// }
+	// verifica se o invoice existe:
+	invoice_to_delete, err := service.invoiceRepository.GetByID(invoice.Id)
+	if err != nil{
+		panic(err)
+	}
+
+	return service.invoiceRepository.Delete(invoice_to_delete)
+}

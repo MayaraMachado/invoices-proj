@@ -4,18 +4,24 @@ import (
 	"os"
 	"io"
 	"net/http"
+	"database/sql"
 	"github.com/gin-gonic/gin"
 	"github.com/mayaramachado/invoice-api/service"
 	"github.com/mayaramachado/invoice-api/controller"
+	"github.com/mayaramachado/invoice-api/repository"
 	"github.com/mayaramachado/invoice-api/middlewares"
+	"github.com/mayaramachado/invoice-api/db"
 	gindump "github.com/tpkeeper/gin-dump"
 )
 
 var (
-	jwtService   service.JWTService   = service.NewJWTService()
-	invoiceService service.InvoiceService = service.New()
-	invoiceController controller.InvoiceController =  controller.New(invoiceService)
+	dbConnection *sql.DB = db.NewDB()
+	invoiceRepository repository.InvoiceRepository = repository.NewInvoiceRepository(dbConnection)
+	invoiceService service.InvoiceService = service.NewInvoiceService(invoiceRepository)
 	loginService service.LoginService = service.NewLoginService()
+	jwtService   service.JWTService   = service.NewJWTService()
+	
+	invoiceController controller.InvoiceController =  controller.NewInvoiceController(invoiceService)
 	loginController controller.LoginController = controller.NewLoginController(loginService, jwtService)
 )
 
@@ -25,6 +31,7 @@ func setupLogOutput() {
 }
 
 func main(){
+	defer dbConnection.Close()
 	server := gin.New()
 
 	server.Use(gin.Recovery(), middlewares.Logger(), gindump.Dump())
@@ -60,7 +67,25 @@ func main(){
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
-				c.JSON(http.StatusOK, gin.H{"message" : "Invoice input valid!"})
+				c.JSON(http.StatusOK, gin.H{"message" : "Invoice created!"})
+			}
+		})
+
+		apiRoutes.PUT("/invoices/:id", func(c *gin.Context){
+			err := invoiceController.Update(c)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				c.JSON(http.StatusOK, gin.H{"message" : "Invoice updated!"})
+			}
+		})
+
+		apiRoutes.DELETE("/invoices/:id", func(c *gin.Context){
+			err := invoiceController.Delete(c)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				c.JSON(http.StatusOK, gin.H{"message" : "Invoice deleted!"})
 			}
 		})
 	}
