@@ -1,6 +1,6 @@
 module github.com/mayaramachado/invoice-api
 
-go 1.13
+go v1.13
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
