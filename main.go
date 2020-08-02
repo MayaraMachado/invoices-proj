@@ -90,7 +90,7 @@ func main(){
 		})
 	}
 
-	// port := os.Getenv("PORT")
-	port:= "3000"
+	port := os.Getenv("PORT")
+	// port:= "3000"
 	server.Run(":" + port)
 }
