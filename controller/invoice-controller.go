@@ -111,13 +111,18 @@ func (ctrl *controller) Update (c *gin.Context) {
 
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"Error": "Invoice não encontrado."})
+		c.JSON(http.StatusNotFound, gin.H{"Error": "Parâmetro inválido. O identificador deve ser um inteiro."})
 		return
 	}
 	
 	invoice.Id = id
 		
-	ctrl.service.Update(invoice)
+	_, err = ctrl.service.Update(invoice)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"Error": "Invoice não encontrado."})
+		return
+	}
+
 	c.Status(http.StatusNoContent)
 	return
 }
@@ -131,7 +136,12 @@ func (ctrl *controller) Delete (c *gin.Context) {
 	}
 	invoice.Id = id
 	
-	ctrl.service.Delete(invoice)
+	_, err = ctrl.service.Delete(invoice)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"Error": "Invoice não encontrado."})
+		return
+	}
+
 	c.Status(http.StatusNoContent)
 	return
 }

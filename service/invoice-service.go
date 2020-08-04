@@ -33,7 +33,7 @@ func (service *invoiceService) FindAll(offset int, limite int, mes int, ano int,
 func (service *invoiceService) Update(invoice entity.Invoice) (entity.Invoice, error){
 	_, err := service.invoiceRepository.GetByID(invoice.Id)
 	if err != nil{
-		panic(err)
+		return invoice, err
 	}
 
 	return service.invoiceRepository.Update(invoice)
@@ -44,7 +44,7 @@ func (service *invoiceService) Delete (invoice entity.Invoice) (entity.Invoice, 
 	// verifica se o invoice existe:
 	invoice_to_delete, err := service.invoiceRepository.GetByID(invoice.Id)
 	if err != nil{
-		panic(err)
+		return invoice, err
 	}
 
 	return service.invoiceRepository.Delete(invoice_to_delete)
