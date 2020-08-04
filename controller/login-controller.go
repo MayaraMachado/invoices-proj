@@ -11,27 +11,27 @@ type LoginController interface {
 }
 
 type loginController struct {
-	loginService service.LoginService
+	userService service.UserService
 	jWtService   service.JWTService
 }
 
-func NewLoginController(loginService service.LoginService,
+func NewLoginController(userService service.UserService,
 	jWtService service.JWTService) LoginController {
 	return &loginController{
-		loginService: loginService,
+		userService: userService,
 		jWtService:   jWtService,
 	}
 }
 
 func (controller *loginController) Login(ctx *gin.Context) string {
-	var credentials entity.Credentials
-	err := ctx.ShouldBind(&credentials)
+	var user entity.User
+	err := ctx.ShouldBind(&user)
 	if err != nil {
 		return ""
 	}
-	isAuthenticated := controller.loginService.Login(credentials.Username, credentials.Password)
+	isAuthenticated := controller.userService.Login(user.Email, user.Password)
 	if isAuthenticated {
-		return controller.jWtService.GenerateToken(credentials.Username, true)
+		return controller.jWtService.GenerateToken(user.Email, true)
 	}
 	return ""
 }

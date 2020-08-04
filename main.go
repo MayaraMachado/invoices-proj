@@ -16,13 +16,18 @@ import (
 
 var (
 	dbConnection *sql.DB = db.NewDB()
+	
 	invoiceRepository repository.InvoiceRepository = repository.NewInvoiceRepository(dbConnection)
+	userRepository repository.UserRepository = repository.NewUserRepository(dbConnection)
+
+	userService service.UserService = service.NewUserService(userRepository)
 	invoiceService service.InvoiceService = service.NewInvoiceService(invoiceRepository)
 	loginService service.LoginService = service.NewLoginService()
 	jwtService   service.JWTService   = service.NewJWTService()
 	
+	userController controller.UserController = controller.NewUserController(userService)
 	invoiceController controller.InvoiceController =  controller.NewInvoiceController(invoiceService)
-	loginController controller.LoginController = controller.NewLoginController(loginService, jwtService)
+	loginController controller.LoginController = controller.NewLoginController(userService, jwtService)
 )
 
 func setupLogOutput() {
@@ -54,6 +59,11 @@ func main(){
 			ctx.JSON(http.StatusUnauthorized, nil)
 		}
 	})
+
+	userRoutes := server.Group("/user")
+	{
+		userRoutes.POST("/register", userController.Save)
+	}
 
 	// JWT Authorization Middleware applies to "/api" only.
 	apiRoutes := server.Group("/api", middlewares.AuthorizeJWT())
