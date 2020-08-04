@@ -59,36 +59,13 @@ func main(){
 	apiRoutes := server.Group("/api", middlewares.AuthorizeJWT())
 	{
 
-		apiRoutes.GET("/invoices", func(c *gin.Context){
-			c.JSON(200, invoiceController.FindAll(c))
-		})
+		apiRoutes.GET("/invoices", invoiceController.FindAll)
 
-		apiRoutes.POST("/invoices", func(c *gin.Context){
-			err := invoiceController.Save(c)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			} else {
-				c.JSON(http.StatusOK, gin.H{"message" : "Invoice created!"})
-			}
-		})
+		apiRoutes.POST("/invoices", invoiceController.Save)
 
-		apiRoutes.PUT("/invoices/:id", func(c *gin.Context){
-			err := invoiceController.Update(c)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			} else {
-				c.JSON(http.StatusOK, gin.H{"message" : "Invoice updated!"})
-			}
-		})
+		apiRoutes.PUT("/invoices/:id", invoiceController.Update)
 
-		apiRoutes.DELETE("/invoices/:id", func(c *gin.Context){
-			err := invoiceController.Delete(c)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			} else {
-				c.JSON(http.StatusOK, gin.H{"message" : "Invoice deleted!"})
-			}
-		})
+		apiRoutes.DELETE("/invoices/:id", invoiceController.Delete)
 	}
 
 	port := os.Getenv("PORT")
