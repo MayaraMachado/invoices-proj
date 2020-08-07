@@ -1,33 +1,34 @@
 package main
 
 import (
-	"os"
+	"database/sql"
 	"io"
 	"net/http"
-	"database/sql"
+	"os"
+
 	"github.com/gin-gonic/gin"
-	"github.com/mayaramachado/invoice-api/service"
 	"github.com/mayaramachado/invoice-api/controller"
-	"github.com/mayaramachado/invoice-api/repository"
-	"github.com/mayaramachado/invoice-api/middlewares"
 	"github.com/mayaramachado/invoice-api/db"
+	"github.com/mayaramachado/invoice-api/middlewares"
+	"github.com/mayaramachado/invoice-api/repository"
+	"github.com/mayaramachado/invoice-api/service"
 	gindump "github.com/tpkeeper/gin-dump"
 )
 
 var (
 	dbConnection *sql.DB = db.NewDB()
-	
-	invoiceRepository repository.InvoiceRepository = repository.NewInvoiceRepository(dbConnection)
-	userRepository repository.UserRepository = repository.NewUserRepository(dbConnection)
 
-	userService service.UserService = service.NewUserService(userRepository)
+	invoiceRepository repository.InvoiceRepository = repository.NewInvoiceRepository(dbConnection)
+	userRepository    repository.UserRepository    = repository.NewUserRepository(dbConnection)
+
+	userService    service.UserService    = service.NewUserService(userRepository)
 	invoiceService service.InvoiceService = service.NewInvoiceService(invoiceRepository)
-	loginService service.LoginService = service.NewLoginService()
-	jwtService   service.JWTService   = service.NewJWTService()
-	
-	userController controller.UserController = controller.NewUserController(userService)
-	invoiceController controller.InvoiceController =  controller.NewInvoiceController(invoiceService)
-	loginController controller.LoginController = controller.NewLoginController(userService, jwtService)
+	loginService   service.LoginService   = service.NewLoginService()
+	jwtService     service.JWTService     = service.NewJWTService()
+
+	userController    controller.UserController    = controller.NewUserController(userService)
+	invoiceController controller.InvoiceController = controller.NewInvoiceController(invoiceService)
+	loginController   controller.LoginController   = controller.NewLoginController(userService, jwtService)
 )
 
 func setupLogOutput() {
@@ -35,14 +36,14 @@ func setupLogOutput() {
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 }
 
-func main(){
+func main() {
 
 	defer dbConnection.Close()
 	server := gin.New()
 
 	server.Use(gin.Recovery(), middlewares.Logger(), gindump.Dump())
 
-	server.GET("/ping", func(c *gin.Context){
+	server.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})
@@ -56,7 +57,7 @@ func main(){
 				"token": token,
 			})
 		} else {
-			ctx.JSON(http.StatusUnauthorized, nil)
+			ctx.Status(http.StatusUnauthorized)
 		}
 	})
 

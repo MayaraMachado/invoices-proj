@@ -12,14 +12,14 @@ type LoginController interface {
 
 type loginController struct {
 	userService service.UserService
-	jWtService   service.JWTService
+	jWtService  service.JWTService
 }
 
 func NewLoginController(userService service.UserService,
 	jWtService service.JWTService) LoginController {
 	return &loginController{
 		userService: userService,
-		jWtService:   jWtService,
+		jWtService:  jWtService,
 	}
 }
 
@@ -29,6 +29,7 @@ func (controller *loginController) Login(ctx *gin.Context) string {
 	if err != nil {
 		return ""
 	}
+
 	isAuthenticated := controller.userService.Login(user.Email, user.Password)
 	if isAuthenticated {
 		return controller.jWtService.GenerateToken(user.Email, true)

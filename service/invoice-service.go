@@ -30,20 +30,20 @@ func (service *invoiceService) FindAll(offset int, limite int, mes int, ano int,
 	return service.invoiceRepository.FindAll(offset, limite, mes, ano, documento, order)
 }
 
-func (service *invoiceService) Update(invoice entity.Invoice) (entity.Invoice, error){
+func (service *invoiceService) Update(invoice entity.Invoice) (entity.Invoice, error) {
 	_, err := service.invoiceRepository.GetByID(invoice.Id)
-	if err != nil{
+	if err != nil {
 		return invoice, err
 	}
 
 	return service.invoiceRepository.Update(invoice)
 }
 
-func (service *invoiceService) Delete (invoice entity.Invoice) (entity.Invoice, error){
+func (service *invoiceService) Delete(invoice entity.Invoice) (entity.Invoice, error) {
 
 	// verifica se o invoice existe:
 	invoice_to_delete, err := service.invoiceRepository.GetByID(invoice.Id)
-	if err != nil{
+	if err != nil {
 		return invoice, err
 	}
 
