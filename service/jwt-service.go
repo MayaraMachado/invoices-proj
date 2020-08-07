@@ -1,6 +1,5 @@
 package service
 
-
 import (
 	"fmt"
 	"os"
@@ -16,20 +15,20 @@ type JWTService interface {
 
 // jwtCustomClaims are custom claims extending default ones.
 type jwtCustomClaims struct {
-	Name string `json:"name"`
-	Admin bool `son:"admin"`
+	Name  string `json:"name"`
+	Admin bool   `son:"admin"`
 	jwt.StandardClaims
 }
 
 type jwtService struct {
 	secretKey string
-	issuer 	  string
+	issuer    string
 }
 
-func NewJWTService() JWTService{
+func NewJWTService() JWTService {
 	return &jwtService{
 		secretKey: getSecretKey(),
-		issuer: "mchdax.com",
+		issuer:    "mchdax.com",
 	}
 }
 
@@ -45,10 +44,10 @@ func (jwtSrv *jwtService) GenerateToken(username string, admin bool) string {
 	claims := &jwtCustomClaims{
 		username,
 		admin,
-		jwt.StandardClaims {
+		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
-			Issuer: jwtSrv.issuer,
-			IssuedAt: time.Now().Unix(),
+			Issuer:    jwtSrv.issuer,
+			IssuedAt:  time.Now().Unix(),
 		},
 	}
 
@@ -57,14 +56,14 @@ func (jwtSrv *jwtService) GenerateToken(username string, admin bool) string {
 
 	// Generate encoded token using the secret signing key
 	t, err := token.SignedString([]byte(jwtSrv.secretKey))
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 	return t
 }
 
-func (jwtSrv *jwtService) ValidateToken(tokenString string) (*jwt.Token, error){
-	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error){
+func (jwtSrv *jwtService) ValidateToken(tokenString string) (*jwt.Token, error) {
+	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["açg"])
 		}
