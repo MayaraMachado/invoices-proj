@@ -1,4 +1,4 @@
-# Título do Projeto
+# Invoices API
 
 A API Invoices é uma API desenvolvida utilizando o framework Gin Gonic, utilizando a linguagem Golang. Ela implementa um CRUD básico onde é possível realizar a gestão de um objeto Invoice. Um exemplo do objeto invoice pode ser visto abaixo:
 
