@@ -31,7 +31,7 @@ func (ctrl *userController) Save(c *gin.Context) {
 	}
 	_, err = ctrl.service.Save(user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": "Não foi possível criar usuário."})
+		c.JSON(http.StatusBadRequest, gin.H{"Error": "Dados inválidos. Não foi possível criar este usuário."})
 		return
 	}
 	c.Status(http.StatusNoContent)
